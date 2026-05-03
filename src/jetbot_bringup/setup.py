@@ -4,6 +4,13 @@ from glob import glob
 
 package_name = 'jetbot_bringup'
 
+# `glob('maps/*')` also matches broken symlinks; setuptools then fails with
+# "No such file or directory" when copying into install/share/.../maps/.
+_map_files = sorted(
+    p for p in glob('maps/*')
+    if os.path.isfile(p)
+)
+
 setup(
     name=package_name,
     version='0.0.0',
@@ -14,7 +21,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob('launch/*.launch.py')),
         ('share/' + package_name + '/config', glob('config/*.yaml')),
-        ('share/' + package_name + '/maps', glob('maps/*')),
+        ('share/' + package_name + '/maps', _map_files),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -25,6 +32,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'robot_nav_bridge = jetbot_bringup.robot_nav_bridge:main',
+            'motor_console_test = jetbot_bringup.motor_console_test:main',
         ],
     },
 )

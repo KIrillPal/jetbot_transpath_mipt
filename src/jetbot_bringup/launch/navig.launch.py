@@ -81,7 +81,7 @@ def generate_launch_description():
         default_value=PathJoinSubstitution([
                         FindPackageShare("jetbot_bringup"), 
                         "config", 
-                        "nav2_default_params.yaml",
+                        "nav2_default_localization_ignore_dyn_obst.yaml",
                     ]),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 

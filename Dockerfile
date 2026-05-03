@@ -19,7 +19,8 @@ git clone https://github.com/ros-visualization/rqt_robot_steering.git -b 1.0.1 &
 git clone https://github.com/ros-tooling/topic_tools.git -b humble && \
 git clone https://github.com/ros2/teleop_twist_joy.git -b humble && \
 git clone https://github.com/ros-drivers/joystick_drivers.git -b ros2 && \
-git clone https://github.com/ros2/rmw_cyclonedds.git -b humble
+git clone https://github.com/ros2/rmw_cyclonedds.git -b humble && \
+git clone https://github.com/blackcoffeerobotics/vector_pursuit_controller.git
 
 WORKDIR ${ROS_ROOT}
 

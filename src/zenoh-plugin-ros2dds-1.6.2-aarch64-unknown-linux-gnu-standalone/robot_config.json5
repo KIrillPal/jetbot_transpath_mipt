@@ -1,21 +1,7 @@
-////
-//// Zenoh Bridge Configuration for Robot Client
-//// Mode: Client - Connects to orchestrator router
-//// ROS 2 Humble, Domain ID: 10
-////
-//// IMPORTANT: Update the following for each robot:
-//// 1. namespace: "/robot_2" -> Change to robot_2, robot_3, robot_4, etc.
-//// 2. nodename: Change suffix to match robot ID
-////
 {
-  ////
-  //// Zenoh client mode - connects to central router
-  ////
+
   mode: "client",
   
-  ////
-  //// Connect to orchestrator at 192.168.50.60:7447
-  ////
   connect: {
     endpoints: ["tcp/10.42.0.1:7447"]
   },
@@ -28,57 +14,29 @@
     //// ROS2 DDS Bridge Plugin
     ////
     ros2dds: {
-      ////
-      //// Node name for this bridge instance
-      //// CHANGE THIS for each robot: zenoh_bridge_robot_2, zenoh_bridge_robot_3, etc.
-      ////
-      nodename: "zenoh_bridge_robot_2",
-      
-      ////
-      //// NO namespace needed here! 
-      //// Robot's Nav2 stack already runs with namespace (robot_2, robot_3, etc.)
-      //// So all topics are already published as robot_2/tf, robot_2/initialpose, etc.
-      //// Using "/" means Zenoh will pass topics as-is without adding extra prefix
-      ////
-      
-      ////
-      //// DDS Domain ID (must match ROS_DOMAIN_ID and orchestrator)
-      ////
-    //   domain: 10,
-      
-      ////
-      //// Allow ROS discovery across network
-      ////
-    //   ros_localhost_only: false,
-      
-      ////
-      //// Discovery range for ROS 2 nodes
-      ////
-    //   ros_automatic_discovery_range: "SUBNET",
-      
-      ////
-      //// Whitelist: Only bridge necessary topics
-      //// IMPORTANT: Patterns match FULL topic names as they appear in ROS
-      //// Since Nav2 already runs with namespace, topics are already robot_X/topic_name
-      //// So we match full paths: robot_2/tf, robot_2/initialpose, etc.
-      ////
-      // allow: {
+      nodename: "zenoh_bridge_robot_5",
 
-      //   publishers: [
-      //     "*/tf",
-      //     "*/nav2_goal_status",
-      //     "*/nav2_goal_result"
-      //   ],
-
-      //   subscribers: [".*/initialpose_external"],
-
-      //   service_servers: [".*"],
-
-      //   service_clients: [".*"],
-
-      //   action_servers: [".*/navigate_to_pose"],
-
-      // },
+      allow: {
+            publishers: [
+              ".*/tf",
+              ".*/tf_static",
+              ".*/map",
+              ".*/nav/goal_reached"
+            ],
+            subscribers: [
+              ".*/initialpose",
+              ".*/nav/goal"
+            ],
+            service_servers: [],
+            service_clients: [],
+            action_clients: [],
+            action_servers: []
+      },
+      pub_priorities: [
+        ".*/initialpose=1:express",
+        ".*/nav/goal=1:express",
+        ".*/nav/goal_reached=1:express"
+      ],
       
       //// queries_timeout: Timeouts configuration for various Zenoh queries.
       ////                  Each field is optional. If not set, the 'default' timeout (5.0 seconds by default) applies to all queries,
@@ -104,10 +62,6 @@
       //   }
       // },
 
-      ////
-      //// Frequency limiting to reduce WiFi bandwidth
-      //// TF updates: 10 Hz is sufficient for orchestrator coordination
-      ////
     }
   }
 }

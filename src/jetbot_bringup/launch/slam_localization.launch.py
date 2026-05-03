@@ -28,9 +28,18 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "slam_params_file",
             default_value=PathJoinSubstitution([
-                FindPackageShare("jetbot_bringup"), "config", "slam_toolbox_online_async_new.yaml"
+                FindPackageShare("jetbot_bringup"), "config", "slam_toolbox_localization.yaml"
             ]),
             description="Path to the slam parameters file"
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "map_file_name",
+            default_value=PathJoinSubstitution([
+                FindPackageShare("jetbot_bringup"), "maps", "map_labirint_tbank"
+            ]),
+            description="Full path to the map file (without extension)"
         )
     )
 
@@ -38,6 +47,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_params_file = LaunchConfiguration("slam_params_file")
     robot_namespace = LaunchConfiguration("robot_namespace")
+    map_file_name = LaunchConfiguration("map_file_name")
 
     slam_params_file = ReplaceString(
         source_file=slam_params_file,
@@ -57,12 +67,13 @@ def generate_launch_description():
     # SLAM Toolbox
     slam_toolbox = Node(
         package='slam_toolbox',
-        executable='async_slam_toolbox_node',
+        executable='localization_slam_toolbox_node',
         name='slam_toolbox',
         namespace=robot_namespace,
         output='screen',
         parameters=[
-            slam_params_file
+            slam_params_file,
+            {'map_file_name': map_file_name}
         ],
         remappings=[('/map','map'),
             ('/tf', 'tf'),
