@@ -1,5 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, TimerAction
+from launch_ros.parameter_descriptions import ParameterValue
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
@@ -40,10 +41,20 @@ def generate_launch_description():
         description="Odometry source: 'lidar' (KISS-ICP) or 'encoders'",
     )
 
+    declare_nav_debug_dump_dir_cmd = DeclareLaunchArgument(
+        'nav_debug_dump_dir',
+        default_value='',
+        description=(
+            'If non-empty: absolute path to a directory where PNG dumps of '
+            'global_costmap + global plan overlay are saved on each plan update.'
+        ),
+    )
+
     robot_namespace = LaunchConfiguration('robot_namespace')
     map_yaml = LaunchConfiguration('map')
     params_file = LaunchConfiguration('params_file')
     odometry_source = LaunchConfiguration('odometry_source')
+    nav_debug_dump_dir = LaunchConfiguration('nav_debug_dump_dir')
     
     # Include activate_all_drivers.launch.py
     # Assuming it is in the same package and accepts a 'namespace' argument.
@@ -82,6 +93,23 @@ def generate_launch_description():
         ]
     )
 
+    # Nav2 global plan + costmap PNG dumps (optional directory via nav_debug_dump_dir)
+    nav_debug_dump_launch = TimerAction(
+        period=18.0,
+        actions=[
+            Node(
+                package='jetbot_bringup',
+                executable='nav_plan_costmap_debug_dump',
+                name='nav_plan_costmap_debug_dump',
+                namespace=robot_namespace,
+                parameters=[{
+                    'dump_directory': ParameterValue(nav_debug_dump_dir, value_type=str),
+                }],
+                output='screen',
+            ),
+        ],
+    )
+
     # Robot navigation bridge - starts 20 seconds after activate_all_drivers (after Nav2)
     robot_nav_bridge_launch = TimerAction(
         period=20.0,
@@ -107,8 +135,10 @@ def generate_launch_description():
     ld.add_action(declare_map_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_odometry_source_cmd)
+    ld.add_action(declare_nav_debug_dump_dir_cmd)
     ld.add_action(activate_all_drivers_launch)
     ld.add_action(navig_launch)
+    ld.add_action(nav_debug_dump_launch)
     ld.add_action(robot_nav_bridge_launch)
 
     return ld

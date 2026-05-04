@@ -32,6 +32,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'nav_plan_costmap_debug_dump = jetbot_bringup.nav_plan_costmap_debug_dump:main',
             'robot_nav_bridge = jetbot_bringup.robot_nav_bridge:main',
             'motor_console_test = jetbot_bringup.motor_console_test:main',
             'scan_to_cloud = jetbot_bringup.scan_to_cloud:main',

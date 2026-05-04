@@ -1,2 +1,3 @@
 *.pyc
 src/jetbot_bringup/maps/
+**/tmp/
