@@ -57,11 +57,25 @@ def generate_launch_description():
             description="Port for HTTP mesh server",
         )
     )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "controllers_file",
+            default_value=PathJoinSubstitution(
+                [
+                    FindPackageShare("diffdrive_jetbot"),
+                    "config",
+                    "diffbot_controllers.yaml",
+                ]
+            ),
+            description="Path to ros2_control controllers yaml",
+        )
+    )
 
     # Initialize Arguments
     robot_namespace = LaunchConfiguration("robot_namespace")
     robot_ip = LaunchConfiguration("robot_ip")
     mesh_port = LaunchConfiguration("mesh_port")
+    controllers_file = LaunchConfiguration("controllers_file")
     cur_controller_manager = [TextSubstitution(text="controller_manager")]
     cur_remappings=[("/tf", "tf"),("/tf_static", "tf_static")]
 
@@ -85,13 +99,7 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": robot_description_content}
 
-    robot_controllers = PathJoinSubstitution(
-        [
-            FindPackageShare("diffdrive_jetbot"),
-            "config",
-            "diffbot_controllers.yaml",
-        ]
-    )
+    robot_controllers = controllers_file
 
     # Start HTTP server for mesh files
     mesh_server = ExecuteProcess(

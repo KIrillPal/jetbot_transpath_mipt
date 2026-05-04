@@ -34,6 +34,7 @@ setup(
         'console_scripts': [
             'robot_nav_bridge = jetbot_bringup.robot_nav_bridge:main',
             'motor_console_test = jetbot_bringup.motor_console_test:main',
+            'scan_to_cloud = jetbot_bringup.scan_to_cloud:main',
         ],
     },
 )

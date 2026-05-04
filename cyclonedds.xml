@@ -3,11 +3,10 @@
      <General>
          <MaxMessageSize>65500B</MaxMessageSize>
          <Interfaces>
-             <!-- For less traffic, force multicast usage on loopback even if not configured.         -->
-             <!-- All ROS Nodes and bridges must have this same config, otherwise they won't discover -->
-             <NetworkInterface address="127.0.0.1" multicast="true"/> 
+             <!-- Publish DDS traffic to LAN for remote RViz -->
+             <NetworkInterface address="192.168.50.94" multicast="true"/>
          </Interfaces>
-         <DontRoute>true</DontRoute>
+         <DontRoute>false</DontRoute>
      </General>
      <Internal>
         <SocketReceiveBufferSize min="10MB"/>

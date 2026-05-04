@@ -34,10 +34,16 @@ def generate_launch_description():
         ]),
         description='Nav2 + map_server + amcl parameter YAML for localization.launch.py',
     )
+    declare_odometry_source_cmd = DeclareLaunchArgument(
+        'odometry_source',
+        default_value='lidar',
+        description="Odometry source: 'lidar' (KISS-ICP) or 'encoders'",
+    )
 
     robot_namespace = LaunchConfiguration('robot_namespace')
     map_yaml = LaunchConfiguration('map')
     params_file = LaunchConfiguration('params_file')
+    odometry_source = LaunchConfiguration('odometry_source')
     
     # Include activate_all_drivers.launch.py
     # Assuming it is in the same package and accepts a 'namespace' argument.
@@ -49,7 +55,10 @@ def generate_launch_description():
                 'activate_all_drivers.launch.py'
             ])
         ),
-        launch_arguments={'robot_namespace': robot_namespace}.items()
+        launch_arguments={
+            'robot_namespace': robot_namespace,
+            'odometry_source': odometry_source,
+        }.items()
     )
 
     # Include navig.launch.py - will start 10 seconds after activate_all_drivers
@@ -97,6 +106,7 @@ def generate_launch_description():
     ld.add_action(declare_robot_id_cmd)
     ld.add_action(declare_map_cmd)
     ld.add_action(declare_params_file_cmd)
+    ld.add_action(declare_odometry_source_cmd)
     ld.add_action(activate_all_drivers_launch)
     ld.add_action(navig_launch)
     ld.add_action(robot_nav_bridge_launch)
