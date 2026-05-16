@@ -41,6 +41,8 @@ rm -rf /var/lib/apt/lists/*
 USER ${APP_USER}
 
 WORKDIR /home/app/ros2_ws
+COPY docker_configs/jetbot_colcon_autobuild.sh /usr/local/bin/jetbot_colcon_autobuild.sh
+RUN chmod +x /usr/local/bin/jetbot_colcon_autobuild.sh
 COPY src src
 RUN /bin/bash -c "source /opt/ros/${ROS_VER}/install/setup.bash && colcon build \
 --parallel-workers 3 --symlink-install && source install/setup.bash"

@@ -39,7 +39,6 @@ def generate_launch_description():
                        'amcl',
                        'controller_server',
                        'smoother_server',
-                       'planner_server',
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
@@ -61,9 +60,17 @@ def generate_launch_description():
         'yaml_filename': map_yaml_file}
 
     #-
+    jetbot_bt_xml = PathJoinSubstitution([
+        FindPackageShare('jetbot_bringup'),
+        'behavior_trees',
+        'jetbot_navigate_to_pose.xml',
+    ])
     params_file_with_sub = ReplaceString(
         source_file=params_file,
-        replacements={'<robot_namespace>': (namespace, '/')},
+        replacements={
+            '<robot_namespace>': (namespace, '/'),
+            '<JETBOT_NAV_BT_XML>': jetbot_bt_xml,
+        },
     )
 
     configured_params = ParameterFile(
@@ -136,12 +143,6 @@ def generate_launch_description():
                 arguments=['scan', 'local_costmap/scan'],
                 remappings=remappings),
             Node(
-                package='topic_tools',
-                executable='relay',
-                name='relay_global_scan',
-                arguments=['scan', 'global_costmap/scan'],
-                remappings=remappings),
-            Node(
                 package='nav2_map_server',
                 executable='map_server',
                 name='map_server',
@@ -149,6 +150,16 @@ def generate_launch_description():
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings),
+            Node(
+                package='jetbot_grid_planner',
+                executable='python_grid_planner',
+                name='python_grid_planner',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
@@ -174,16 +185,6 @@ def generate_launch_description():
                 package='nav2_smoother',
                 executable='smoother_server',
                 name='smoother_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
-            Node(
-                package='nav2_planner',
-                executable='planner_server',
-                name='planner_server',
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,

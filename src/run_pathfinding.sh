@@ -7,7 +7,7 @@ ros2 launch jetbot_bringup all_robot_launches_localization.launch.py \
   map:=/home/app/ros2_ws/src/jetbot_bringup/maps/map_labirint_v3.yaml \
   params_file:=/home/app/ros2_ws/src/jetbot_bringup/config/nav2_default_localization_ignore_dyn_obst.yaml \
   odometry_source:=encoders \
-  nav_debug_dump_dir:="/home/app/ros2_ws/src/jetbot_bringup/tmp/nav_debug_dump2"
+  nav_debug_dump_dir:="/home/app/ros2_ws/src/jetbot_bringup/tmp/nav_debug_dump3"
 
 sleep 20; \
 ros2 topic pub --once /robot_2/initialpose geometry_msgs/msg/PoseWithCovarianceStamped \

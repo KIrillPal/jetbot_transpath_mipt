@@ -13,6 +13,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ./src:/home/app/ros2_ws/src
+      - ./docker_configs/jetbot_colcon_autobuild.sh:/usr/local/bin/jetbot_colcon_autobuild.sh:ro
       - ./cyclonedds.xml:/home/app/cyclonedds.xml
     environment:
       - DISPLAY=${DISPLAY}
@@ -21,12 +22,15 @@ services:
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
       - CYCLONEDDS_URI=file:///home/app/cyclonedds.xml
       #- RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+      - COLCON_TRACE=0
+      - COLCON_PYTHON_EXECUTABLE=/usr/bin/python3
     devices:
       - /dev/input:/dev/input
       - /dev/ttyLIDAR:/dev/ttyLIDAR
       - /dev/ttyMOTOR:/dev/ttyMOTOR
       - /dev/video0:/dev/video0
     working_dir: /home/app/ros2_ws
+    command: bash -lc "/usr/local/bin/jetbot_colcon_autobuild.sh && exec tail -f /dev/null"
     #command: bash -c "source install/setup.bash && ros2 launch jetbot_bringup all_robot_launches_slam_localization.launch.py robot_namespace:=robot_5"
     # command: bash -c "cd /home/app/ros2_ws/src/zenoh-plugin-ros2dds-1.6.2-aarch64-unknown-linux-gnu-standalone &&
     #            ./zenoh-bridge-ros2dds -c robot_config.json5 &

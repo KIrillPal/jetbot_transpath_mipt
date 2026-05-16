@@ -6,6 +6,8 @@ bt_navigator:
     global_frame: <robot_namespace>map
     robot_base_frame: <robot_namespace>base_footprint
     odom_topic: "diffbot_base_controller/odom"
+    # Только navigate_to_pose: без planner_server нет action compute_path_through_poses.
+    navigators: ["navigate_to_pose"]
     bt_loop_duration: 10
     default_server_timeout: 20
     enable_groot_monitoring: true
@@ -43,6 +45,11 @@ bt_navigator:
     - nav2_planner_selector_bt_node
     - nav2_controller_selector_bt_node
     - nav2_goal_checker_selector_bt_node
+
+    # Кастомное дерево: Python ComputePathToPose + план по /map (без planner_server)
+    navigate_to_pose:
+      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+      default_bt_xml_filename: "<JETBOT_NAV_BT_XML>"
 
 bt_navigator_rclcpp_node:
   ros__parameters:
@@ -251,23 +258,8 @@ map_saver:
     map_subscribe_transient_local: true
 
 # https://docs.nav2.org/configuration/packages/configuring-planner-server.html
-# https://docs.nav2.org/plugins/index.html#planners
-
-# https://docs.nav2.org/configuration/packages/configuring-navfn.html
-planner_server:
-  ros__parameters:
-    expected_planner_frequency: 3.0
-    use_sim_time: false
-    planner_plugins: ["GridBased"]
-    GridBased:
-      plugin: "nav2_navfn_planner/NavfnPlanner"
-      tolerance: 0.2
-      use_astar: false
-      allow_unknown: true
-
-planner_server_rclcpp_node:
-  ros__parameters:
-    use_sim_time: false
+# Глобальный план строит jetbot_grid_planner (Python, Dijkstra по /map).
+# planner_server отключён в localization.launch.py — иначе конфликт action compute_path_to_pose.
 
 # Nav2 Humble: parameters for executable behavior_server (recoveries_server is legacy and ignored).
 behavior_server:
